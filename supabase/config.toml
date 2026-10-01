@@ -1,5 +1,8 @@
 [functions.consultar-cpf]
 verify_jwt = false
 
+[functions.criar-cadastro]
+verify_jwt = false
+
 [functions.criar-pagamento]
 verify_jwt = false

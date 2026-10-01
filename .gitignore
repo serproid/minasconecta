@@ -25,3 +25,6 @@ dist-ssr
 
 # Local opencode config (contains secrets)
 opencode.json
+
+# Supabase CLI local cache
+supabase/.temp/
