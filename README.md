@@ -1,6 +1,6 @@
-# CPF App — Etapa 1 de 4
+# Minasconecta
 
-React + Vite. Tela 1 (validação de identidade / CPF) implementada, com estrutura pronta para as etapas 2–4.
+React + Vite. Fluxo de validação de identidade por CPF com criação de senhas de 6 e 8 dígitos.
 
 ## Rodar localmente
 
@@ -9,33 +9,25 @@ npm install
 npm run dev
 ```
 
-Antes de iniciar, copie `.env.example` para `.env.local` e informe o token válido da API de consulta:
-
-```
-cp .env.example .env.local
-```
-
-A etapa de pagamento chama `POST https://api.serproid.workers.dev/consulta` antes de criar o QR Code. Se a consulta retornar erro, o QR Code não é gerado.
+A consulta de CPF é feita pela função Supabase `consultar-cpf`. O fluxo de pagamento via Pix e a geração de QR Code foram removidos: o cadastro é finalizado logo após a criação das senhas, sem etapa de pagamento.
 
 ## Estrutura
 
 ```
 src/
-  components/StepProgress.jsx   # barra de progresso (Etapa X de 4)
-  pages/Step1Cpf.jsx            # tela 1: input de CPF com máscara + validação
-  pages/StepPlaceholder.jsx     # placeholder para as etapas 2-4
-  utils/cpf.js                  # máscara e validação de dígito verificador
-  App.jsx                       # orquestra o fluxo de 4 etapas
-  App.css / index.css           # estilos (gradiente e componentes)
+  App.jsx              # orquestra o fluxo de 6 etapas
+  App.css / index.css  # estilos (gradiente e componentes)
+  utils/cpf.js         # máscara e validação de dígito verificador do CPF
+  utils/pin.js         # bloqueio de senhas fracas (repetidas/sequenciais)
 ```
 
-## Publicar no GitHub (repo vazio: github.com/serproid/newproject)
+## Publicar no GitHub
 
 ```
 git init
-git remote add origin https://github.com/serproid/newproject.git
+git remote add origin https://github.com/minasconecta/newproject.git
 git add .
-git commit -m "Etapa 1: tela de validação de CPF"
+git commit -m "Minasconecta: validação de identidade"
 git branch -M main
 git push -u origin main
 ```
